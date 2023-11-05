@@ -172,7 +172,7 @@ def combined_opt(commit_dict, option):
 
 def main():
     if len(sys.argv) != 3:
-        print("Usage: python commitanalyser.py commits.txt identities.txt")
+        print("Usage: python commitsanalyser.py commits.txt identities.txt")
         return
     print("Starting analysis...")
     commit_txt = sys.argv[1]
