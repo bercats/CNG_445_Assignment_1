@@ -11,16 +11,14 @@ def parse_identities(identities_txt):
     identities_dict = {}
     try:
         file = open(identities_txt, "r")
-        for line in file:
-            if line.startswith("Commiter ID"):
-                continue
-            else:
-                line_data = re.split(",", line)
-                committer_id = line_data[0]
-                name = line_data[1]
-                email = line_data[2].strip()
-                # Create a new person dictionary if the committer ID is not in the dictionary
-                identities_dict[committer_id] = {"name": name, "email": email}
+        lines = file.readlines()
+        for line in lines[1:]:
+            line_data = re.split(",", line)
+            committer_id = line_data[0]
+            name = line_data[1]
+            email = line_data[2].strip()
+            # Create a new person dictionary if the committer ID is not in the dictionary
+            identities_dict[committer_id] = {"name": name, "email": email}
         return identities_dict
     except IOError:
         print("Could not open file " + identities_txt)
@@ -30,34 +28,32 @@ def parse_commits(commit_txt, identities_dict):
     commit_dict = {}
     try:
         file = open(commit_txt, "r")
-        for line in file:
-            if line.startswith("Commit ID"):
-                continue
+        lines = file.readlines()
+        for line in lines[1:]:
+            line_data = re.split(",", line)
+            swm_tasks = [int(task) for task in line_data[1:4]]
+            nfr_labeling = [int(label) for label in line_data[4:10]]
+            soft_evol_tasks = [int(task) for task in line_data[10:14]]
+            committer_id = line_data[14]
+            # get person name from identities_dict
+            name = identities_dict[committer_id]["name"]
+            # Create a new commit dictionary if the name is not in the dictionary
+            if name not in commit_dict:
+                commit_dict[name] = {
+                    "SwM tasks": swm_tasks,
+                    "NFR Labeling": nfr_labeling,
+                    "SoftEvol tasks": soft_evol_tasks,
+                }
             else:
-                line_data = re.split(",", line)
-                swm_tasks = [int(task) for task in line_data[1:4]]
-                nfr_labeling = [int(label) for label in line_data[4:10]]
-                soft_evol_tasks = [int(task) for task in line_data[10:14]]
-                committer_id = line_data[14]
-                # get person name from identities_dict
-                name = identities_dict[committer_id]["name"]
-                # Create a new commit dictionary if the name is not in the dictionary
-                if name not in commit_dict:
-                    commit_dict[name] = {
-                        "SwM tasks": swm_tasks,
-                        "NFR Labeling": nfr_labeling,
-                        "SoftEvol tasks": soft_evol_tasks,
-                    }
-                else:
-                    # add the tasks to the existing commit dictionary
-                    for i in range(0, len(swm_tasks)):
-                        commit_dict[name]["SwM tasks"][i] += int(swm_tasks[i])
+                # add the tasks to the existing commit dictionary
+                for i in range(0, len(swm_tasks)):
+                    commit_dict[name]["SwM tasks"][i] += int(swm_tasks[i])
 
-                    for i in range(0, len(nfr_labeling)):
-                        commit_dict[name]["NFR Labeling"][i] += int(nfr_labeling[i])
+                for i in range(0, len(nfr_labeling)):
+                    commit_dict[name]["NFR Labeling"][i] += int(nfr_labeling[i])
 
-                    for i in range(0, len(soft_evol_tasks)):
-                        commit_dict[name]["SoftEvol tasks"][i] += int(soft_evol_tasks[i])
+                for i in range(0, len(soft_evol_tasks)):
+                    commit_dict[name]["SoftEvol tasks"][i] += int(soft_evol_tasks[i])
         return commit_dict
     except IOError:
         print("Could not open file " + commit_txt)
