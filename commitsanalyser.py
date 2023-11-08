@@ -1,5 +1,4 @@
 import sys
-import re
 import matplotlib.pyplot as plt
 
 swmFeatures = ["Adaptive", "Corrective", "Perfective"]
@@ -13,7 +12,7 @@ def parse_identities(identities_txt):
         file = open(identities_txt, "r")
         lines = file.readlines()
         for line in lines[1:]:
-            line_data = re.split(",", line)
+            line_data = line.split(",")
             committer_id = line_data[0]
             name = line_data[1]
             email = line_data[2].strip()
@@ -30,7 +29,7 @@ def parse_commits(commit_txt, identities_dict):
         file = open(commit_txt, "r")
         lines = file.readlines()
         for line in lines[1:]:
-            line_data = re.split(",", line)
+            line_data = line.split(",")
             swm_tasks = [int(task) for task in line_data[1:4]]
             nfr_labeling = [int(label) for label in line_data[4:10]]
             soft_evol_tasks = [int(task) for task in line_data[10:14]]
@@ -89,18 +88,19 @@ def menu(commit_txt, identities_txt):
             combined_opt(commit_dict, choice)
             print("\n")
     return
-    
+
+
 def opt1(commit_dict):
     names = list(commit_dict.keys())
     labels = None
     try:
         print("Select a developer: ")
-        for i, name in enumerate(commit_dict,1):
+        for i, name in enumerate(commit_dict, 1):
             print(f"{i}. {name}")
         name = names[int(input("Enter your choice: ")) - 1]
         print("\n")
         print("Select a classification scheme:")
-        for i, scheme in enumerate(classificationSchemes,1):
+        for i, scheme in enumerate(classificationSchemes, 1):
             print(f"{i}. {scheme}")
         scheme = int(input("Enter your choice: "))
         print("\n")
@@ -113,7 +113,7 @@ def opt1(commit_dict):
         else:
             print("Invalid choice.")
         values = commit_dict[name][classificationSchemes[scheme - 1]]
-        plot_graph(f"Comparison of {name}'s commits for {classificationSchemes[scheme-1]}", labels, values)
+        plot_graph(f"Comparison of {name}'s commits for {classificationSchemes[scheme - 1]}", labels, values)
     except KeyError:
         print("Invalid name.")
     return
