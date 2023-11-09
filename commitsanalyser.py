@@ -22,6 +22,8 @@ def parse_identities(identities_txt):
     except IOError:
         print("Could not open file " + identities_txt)
         return {}
+    finally:
+        file.close()
 
 def parse_commits(commit_txt, identities_dict):
     commit_dict = {}
@@ -57,6 +59,8 @@ def parse_commits(commit_txt, identities_dict):
     except IOError:
         print("Could not open file " + commit_txt)
         return
+    finally:
+        file.close()
 
 def plot_graph(title, labels, values):
     plt.bar(labels, values)
